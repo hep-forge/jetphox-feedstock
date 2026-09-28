@@ -1,0 +1,88 @@
+{% set versions = {
+    "1.3.1_4": "56ff4e87804b4ce8e2f60695ef2235f878ebd25cb00233652cdbc67d950ccfd7",
+    "1.3.1_3": "134c3a9d9d39b45f64780b3f7201ed3e659512669a5f1de0809d60dfb472da5c"
+} %}
+
+{% set version = environ.get('COMMIT_VERSION', None) %}
+{% set version = version or versions.keys()|first %}
+{% set version = version|string %}
+
+package:
+  name: {{ environ.get('ANACONDA_PACKAGE', "jetphox")|string|lower }}
+  # conda versions cannot carry the upstream "_" build suffix: 1.3.1_4 -> 1.3.1.4
+  version: {{ environ.get('ANACONDA_VERSION', version)|replace("-", ".")|replace("_", ".") }}
+
+source:
+  url: "https://lapth.cnrs.fr/PHOX_FAMILY/src/jetphox_{{ version }}.tar.gz"
+  {% if versions.get(version, None) %}
+  sha256: {{ versions.get(version) }}
+  {% endif %}
+
+build:
+  number: 0
+  # JETPHOX compiles a run-specific executable at run time (start.pl writes
+  # the histogram code from param_histo.indat and runs make), so the package
+  # ships the source tree with the run-independent libraries pre-built.
+  binary_relocation: false
+  detect_binary_files_with_prefix: false
+
+requirements:
+  build:
+    - {{ compiler('fortran') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - make
+    - sed
+
+  host:
+    - lhapdf
+    - root
+
+  run:
+    # the per-run build happens on the user's side: same toolchain family,
+    # plain gfortran/gcc/g++ names as JETPHOX's Makefile expects
+    - gfortran
+    - gcc
+    - gxx
+    - make
+    - perl
+    - {{ pin_compatible('lhapdf', max_pin='x.x') }}
+    - {{ pin_compatible('root', max_pin='x.x') }}
+
+test:
+  requires:
+    - lhapdf
+  commands:
+    - test -f $PREFIX/share/jetphox/basesv5.1/libbases.a
+    - test -f $PREFIX/share/jetphox/frag/libfrag.a
+    - test -f $PREFIX/share/jetphox/pdfa/libpdfa.a
+    - jetphox-init $SRC_DIR/jetphox-test
+    # start.pl reads parameter.indat, generates the histogram code and
+    # compiles the run executable: the whole per-run build must succeed
+    - cd $SRC_DIR/jetphox-test/working && perl start.pl && ls run*.exe && ls onephot*.exe
+
+about:
+  home: "https://lapth.cnrs.fr/PHOX_FAMILY/jetphox.html"
+  license: LicenseRef-JETPHOX
+  license_family: OTHER
+  summary: "JETPHOX: NLO cross sections for prompt photon (direct + fragmentation) and hadron production, with or without a jet"
+  description: |
+    JETPHOX computes, at next-to-leading order in QCD, cross sections for
+    h h -> gamma/hadron + X and gamma/hadron + jet + X: the direct and the
+    fragmentation contributions of prompt photons (fragmentation functions of
+    Bourhis, Fontannaz and Guillet), inclusive or isolated (Frixione-discrete
+    and ATLAS-type criteria), and single-hadron production with its
+    fragmentation functions. PDFs through LHAPDF, output as ROOT histograms or
+    ntuples. Authors: P. Aurenche, M. Fontannaz, J.-Ph. Guillet, E. Pilon,
+    M. Werlen et al. (LAPTH). References: JHEP 0205:028 (2002);
+    Phys. Rev. D73 094007 (2006); Phys. Rev. D79 114024 (2009).
+
+    Usage: `jetphox-init <dir>` copies a ready-to-run JETPHOX tree into <dir>;
+    edit <dir>/working/parameter.indat (and param_histo.indat), then run
+    `perl start.pl` there, as in the upstream README.
+  doc_url: "https://lapth.cnrs.fr/PHOX_FAMILY/jetphox.html"
+
+extra:
+  recipe-maintainers:
+    - meiyasan
