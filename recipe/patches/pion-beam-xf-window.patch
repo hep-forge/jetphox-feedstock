@@ -1,0 +1,327 @@
+diff --git a/src/dir/src/onephotd_jet.f b/src/dir/src/onephotd_jet.f
+index b6003a6..87b917b 100644
+--- a/src/dir/src/onephotd_jet.f
++++ b/src/dir/src/onephotd_jet.f
+@@ -699,6 +699,7 @@ c integrale a 4 dimensions
+ 	common/hadron/ih1,ih2,ih3,ih4
+ 	common/coul/n,cf,gtr
+ 	common/parami/ysup,yinf,gptsup,gptinf,s
++	common/xfcut/ixfcut,xfcutmin,xfcutmax
+ 	common/param_jet/y_jetsup,y_jetinf,gpt_jetsup,gpt_jetinf
+ 	common/coup/ptm,r
+ 	common/flag/icoup
+@@ -748,6 +749,14 @@ c ------------------ gpt4 ------------------------------------------
+ 	gpt4max = dmax1(gptinf,gpt4maxp)
+ 	gpt4min = gptinf
+ 	gpt4 = gpt4min + (gpt4max-gpt4min)*xx(3)
++c octofit patch: optional x_F window on the photon (JETPHOX_XF)
++	if (ixfcut.eq.1) then
++	  xfph = 2.d0*gpt4*dsinh(y4)/dsqrt(s)
++	  if (xfph.lt.xfcutmin.or.xfph.ge.xfcutmax) then
++	    f4dimd3 = 0.d0
++	    return
++	  endif
++	endif
+ c ------------------ pt5 --------------------------------------------
+ c x1c_min = pt5/dsqrt(s)*exp(y3) + gpt4/dsqrt(s)*exp(y4)
+ c x2c_min = pt5/dsqrt(s)*exp(-y3) + gpt4/dsqrt(s)*exp(-y4)
+@@ -1126,6 +1135,7 @@ c integrale a 4 dimensions
+ 	common/hadron/ih1,ih2,ih3,ih4
+ 	common/coul/n,cf,gtr
+ 	common/parami/ysup,yinf,gptsup,gptinf,s
++	common/xfcut/ixfcut,xfcutmin,xfcutmax
+ 	common/param_jet/y_jetsup,y_jetinf,gpt_jetsup,gpt_jetinf
+ 	common/coup/ptm,r
+ 	common/flag/icoup
+@@ -1175,6 +1185,14 @@ c ------------------ gpt4 ------------------------------------------
+ 	gpt4max = dmax1(gptinf,gpt4maxp)
+ 	gpt4min = gptinf
+ 	gpt4 = gpt4min + (gpt4max-gpt4min)*xx(3)
++c octofit patch: optional x_F window on the photon (JETPHOX_XF)
++	if (ixfcut.eq.1) then
++	  xfph = 2.d0*gpt4*dsinh(y4)/dsqrt(s)
++	  if (xfph.lt.xfcutmin.or.xfph.ge.xfcutmax) then
++	    f4dimd4 = 0.d0
++	    return
++	  endif
++	endif
+ c ------------------ pt5 --------------------------------------------
+ 	pt5max = dsqrt(gpt4**2+gpt_jetsup**2)
+ 	pt5min = ptm
+@@ -1515,6 +1533,7 @@ c integrale a 2 dimensions
+ 	common/scale/m,mf,mu
+ 	common/coul/n,cf,gtr
+ 	common/parami/ysup,yinf,gptsup,gptinf,s
++	common/xfcut/ixfcut,xfcutmin,xfcutmax
+ 	common/param_jet/y_jetsup,y_jetinf,gpt_jetsup,gpt_jetinf
+ 	common/alem/iloopem
+ 	common/faconv/hc2
+@@ -1559,6 +1578,14 @@ c ------------------ gpt4 ------------------------------------------
+ 	gpt4min = dmax1(gptinf,gpt_jetinf)
+ 	gpt4max = dmax1(gpt4min,gpt4maxp)
+ 	gpt4 = gpt4min + (gpt4max-gpt4min)*xx(3)
++c octofit patch: optional x_F window on the photon (JETPHOX_XF)
++	if (ixfcut.eq.1) then
++	  xfph = 2.d0*gpt4*dsinh(y4)/dsqrt(s)
++	  if (xfph.lt.xfcutmin.or.xfph.ge.xfcutmax) then
++	    f2dimd1 = 0.d0
++	    return
++	  endif
++	endif
+ c ------------------ u -------------------------------------------
+ 	u1 = xx(4)
+ 	if (iauren.eq.0) then
+@@ -1672,6 +1699,7 @@ c integrale a 2 dimensions
+ 	common/scale/m,mf,mu
+ 	common/coul/n,cf,gtr
+ 	common/parami/ysup,yinf,gptsup,gptinf,s
++	common/xfcut/ixfcut,xfcutmin,xfcutmax
+ 	common/param_jet/y_jetsup,y_jetinf,gpt_jetsup,gpt_jetinf
+ 	common/alem/iloopem
+ 	common/faconv/hc2
+@@ -1720,6 +1748,14 @@ c ------------------ gpt4 ------------------------------------------
+ 	gpt4max = dmax1(gptinf,gpt_jetinf,gpt4maxp)
+ 	gpt4min = dmax1(gptinf,gpt_jetinf)
+ 	gpt4 = gpt4min + (gpt4max-gpt4min)*xx(3)
++c octofit patch: optional x_F window on the photon (JETPHOX_XF)
++	if (ixfcut.eq.1) then
++	  xfph = 2.d0*gpt4*dsinh(y4)/dsqrt(s)
++	  if (xfph.lt.xfcutmin.or.xfph.ge.xfcutmax) then
++	    f2dimd3 = 0.d0
++	    return
++	  endif
++	endif
+ 	gpt3maxp = dmin1(gpt_jetsup,dsqrt(s)/(2.d0*dcosh(y3)))
+ 	gpt3max = dmax1(gpt_jetinf,gpt3maxp)
+ 	gpt3min = gpt_jetinf
+@@ -1876,6 +1912,7 @@ c integrale a 1 dimension
+ 	common/scale/m,mf,mu
+ 	common/coul/n,cf,gtr
+ 	common/parami/ysup,yinf,gptsup,gptinf,s
++	common/xfcut/ixfcut,xfcutmin,xfcutmax
+ 	common/param_jet/y_jetsup,y_jetinf,gpt_jetsup,gpt_jetinf
+ 	common/alem/iloopem
+ 	common/faconv/hc2
+@@ -1931,6 +1968,14 @@ c ------------------ gpt4 ------------------------------------------
+ 	gpt3max = dmax1(gpt_jetinf,gpt3maxp)
+ 	gpt3min = gpt_jetinf
+ 	gpt4 = gpt4min + (gpt4max-gpt4min)*xx(3)
++c octofit patch: optional x_F window on the photon (JETPHOX_XF)
++	if (ixfcut.eq.1) then
++	  xfph = 2.d0*gpt4*dsinh(y4)/dsqrt(s)
++	  if (xfph.lt.xfcutmin.or.xfph.ge.xfcutmax) then
++	    f1dimd = 0.d0
++	    return
++	  endif
++	endif
+ 	gpt3 = gpt4
+ c
+ 	x10 = gpt4*(dexp(y3)+dexp(y4))/dsqrt(s)
+diff --git a/src/main/distfunb_lhapdf.f b/src/main/distfunb_lhapdf.f
+index 7a9826d..a6b307e 100644
+--- a/src/main/distfunb_lhapdf.f
++++ b/src/main/distfunb_lhapdf.f
+@@ -5,6 +5,7 @@
+ c ARLEO 06.03.07
+ 	COMMON/NUCLEUS/ish
+ 	COMMON/APPROX/lo,nlo
++	common/pionset/ipionset
+ 	logical lo,nlo
+ c 1=d 2=u 3=s 4=c 5=b 6=t 0=g
+ c -1=db -2=ub -3=sb -4=cb -5=bb -6=tb
+@@ -40,13 +41,26 @@ c ih = 1 fonctions de distribution dans l antiproton
+ 	    f(i) = dxpdf(-i)/x
+ 	    f(-i) = dxpdf(i)/x
+ 	  enddo
+-	else if (ih.eq.3) then
+-c ih = 3 fonctions de distribution dans le pion
++	else if (ih.eq.3.or.ih.eq.4) then
++c ih = 3 pi- (charge conjugate of the stored set), ih = 4 pi+ (as stored)
++c octofit patch: the pion set lives in LHAPDF slot 2 when JETPHOX_PION_PDF is set
+ 	  if (m2.lt.q2min) then
+ 	    m2 = q2min
+ 	  endif
+ 	  m = dsqrt(m2)
+-	  call evolvepdf(x,m,dxpdf)
++	  if (ipionset.eq.1) then
++	    call evolvepdfm(2,x,m,dxpdf)
++	  else
++	    call evolvepdf(x,m,dxpdf)
++	  endif
++	  if (ih.eq.4) then
++	    f(0) = dxpdf(0)/x
++	    do i=1,6
++	      f(i) = dxpdf(i)/x
++	      f(-i) = dxpdf(-i)/x
++	    enddo
++	    return
++	  endif
+ 	  f(0) = dxpdf(0)/x
+ 	  do i=1,6
+ 	    f(i) = dxpdf(-i)/x
+diff --git a/src/main/param_lhapdf.f b/src/main/param_lhapdf.f
+index a0c82f5..440466d 100644
+--- a/src/main/param_lhapdf.f
++++ b/src/main/param_lhapdf.f
+@@ -10,6 +10,11 @@ c choix des differents parametres
+ 	common/gdf/jnf
+ 	common/coul/n,cf,gtr
+ 	common/hadron/ih1,ih2,ih3,ih4
++c octofit patch: optional separate pion PDF (LHAPDF slot 2)
++	common/pionset/ipionset
++	common/xfcut/ixfcut,xfcutmin,xfcutmax
++	character*100 xfenv
++	character*200 name_pion
+ 	common/coup/ptm,r
+ 	common/flag/icoup
+ 	common/coupexp/ptm_exp,r_exp
+@@ -104,6 +109,21 @@ c	call  InitPDFsetByName('cteq66.LHgrid')
+ 	call  InitPDFsetByName(trim(name_pdf))
+ c	call pdfset(parm,value) ! change
+        call initpdf(ichoix_member)
++	ixfcut = 0
++	call getenv('JETPHOX_XF', xfenv)
++	if (len_trim(xfenv).gt.0) then
++	  read(xfenv,*) xfcutmin, xfcutmax
++	  ixfcut = 1
++	  write(8,*) 'x_F window=', xfcutmin, xfcutmax
++	endif
++	ipionset = 0
++	call getenv('JETPHOX_PION_PDF', name_pion)
++	if (len_trim(name_pion).gt.0) then
++	  call InitPDFsetByNameM(2, trim(name_pion))
++	  call InitPDFM(2, 0)
++	  ipionset = 1
++	  write(8,*) 'pion PDF (slot 2)=', trim(name_pion)
++	endif
+ 	call numberPDF(ilist_member)
+ 	print*, 'test ilist_member ',ilist_member
+       call GetXmin(0,xmin)
+@@ -203,7 +223,7 @@ c calcul de racine de s
+ 	  xmpi = .139567d0
+ 	  if (ih1.le.1) then
+ 	    xm_inci = xmp
+-	  else if (ih1.eq.3) then
++	  else if (ih1.eq.3.or.ih1.eq.4) then
+ 	    xm_inci = xmpi
+ 	  else
+ 	    write (*,*) 'bad choice of incident particle'
+diff --git a/src/onef/src/onephoto_jet.f b/src/onef/src/onephoto_jet.f
+index eaac94b..95cb929 100644
+--- a/src/onef/src/onephoto_jet.f
++++ b/src/onef/src/onephoto_jet.f
+@@ -693,6 +693,7 @@ c integrale a 4 dimensions
+ 	common/hadron/ih1,ih2,ih3,ih4
+ 	common/coul/n,cf,gtr
+ 	common/parami/ysup,yinf,gptsup,gptinf,s
++	common/xfcut/ixfcut,xfcutmin,xfcutmax
+ 	common/param_jet/y_jetsup,y_jetinf,gpt_jetsup,gpt_jetinf
+ 	common/coup/ptm,r
+ 	common/flag/icoup
+@@ -744,6 +745,14 @@ c ------------------ gpt4 ------------------------------------------
+ 	gpt4max = dmax1(gptinf,gpt4maxp)
+ 	gpt4min = gptinf
+ 	gpt4 = gpt4min + (gpt4max-gpt4min)*xx(3)
++c octofit patch: optional x_F window on the photon (JETPHOX_XF)
++	if (ixfcut.eq.1) then
++	  xfph = 2.d0*gpt4*dsinh(y4)/dsqrt(s)
++	  if (xfph.lt.xfcutmin.or.xfph.ge.xfcutmax) then
++	    f4dimo3 = 0.d0
++	    return
++	  endif
++	endif
+ c ------------------ x4 ---------------------------------------------
+ 	x4max = 1.d0
+ 	x4min_incl = 2.d0*gpt4/dsqrt(s)*dcosh(y4)
+@@ -1149,6 +1158,7 @@ c integrale a 4 dimensions
+ 	common/hadron/ih1,ih2,ih3,ih4
+ 	common/coul/n,cf,gtr
+ 	common/parami/ysup,yinf,gptsup,gptinf,s
++	common/xfcut/ixfcut,xfcutmin,xfcutmax
+ 	common/param_jet/y_jetsup,y_jetinf,gpt_jetsup,gpt_jetinf
+ 	common/coup/ptm,r
+ 	common/flag/icoup
+@@ -1200,6 +1210,14 @@ c ------------------ gpt4 ------------------------------------------
+ 	gpt4max = dmax1(gptinf,gpt4maxp)
+ 	gpt4min = gptinf
+ 	gpt4 = gpt4min + (gpt4max-gpt4min)*xx(3)
++c octofit patch: optional x_F window on the photon (JETPHOX_XF)
++	if (ixfcut.eq.1) then
++	  xfph = 2.d0*gpt4*dsinh(y4)/dsqrt(s)
++	  if (xfph.lt.xfcutmin.or.xfph.ge.xfcutmax) then
++	    f4dimo4 = 0.d0
++	    return
++	  endif
++	endif
+ c ------------------ x4 -------------------------------------------
+ 	x4max = 1.d0
+ 	x4min_incl = 2.d0*gpt4/dsqrt(s)*dcosh(y4)	
+@@ -1564,6 +1582,7 @@ c integrale a 2 dimensions
+ 	common/scale/m,mf,mu
+ 	common/coul/n,cf,gtr
+ 	common/parami/ysup,yinf,gptsup,gptinf,s
++	common/xfcut/ixfcut,xfcutmin,xfcutmax
+ 	common/param_jet/y_jetsup,y_jetinf,gpt_jetsup,gpt_jetinf
+ 	common/alem/iloopem
+ 	common/faconv/hc2
+@@ -1608,6 +1627,14 @@ c ------------------ gpt4 ------------------------------------------
+ 	gpt4max = dmax1(gptinf,gpt4maxp)
+ 	gpt4min = gptinf
+ 	gpt4 = gpt4min + (gpt4max-gpt4min)*xx(3)
++c octofit patch: optional x_F window on the photon (JETPHOX_XF)
++	if (ixfcut.eq.1) then
++	  xfph = 2.d0*gpt4*dsinh(y4)/dsqrt(s)
++	  if (xfph.lt.xfcutmin.or.xfph.ge.xfcutmax) then
++	    f2dimo1 = 0.d0
++	    return
++	  endif
++	endif
+ c ------------------ gpt3 ------------------------------------------
+ c x4 = gpt4/gpt3 et x4min=2*gpt4/dsqrt(s)*dcosh(y4) <= gpt4/gpt3
+ c d'ou gpt3 <= dsqrt(s)/(2.d0*dcosh(y4)) ou gpt3 <= gpt4/x4min
+@@ -1743,6 +1770,7 @@ c integrale a 2 dimensions
+ 	common/scale/m,mf,mu
+ 	common/coul/n,cf,gtr
+ 	common/parami/ysup,yinf,gptsup,gptinf,s
++	common/xfcut/ixfcut,xfcutmin,xfcutmax
+ 	common/param_jet/y_jetsup,y_jetinf,gpt_jetsup,gpt_jetinf
+ 	common/alem/iloopem
+ 	common/faconv/hc2
+@@ -1793,6 +1821,14 @@ c ------------------ gpt4 ------------------------------------------
+ 	gpt4max = dmax1(gptinf,gpt4maxp)
+ 	gpt4min = gptinf
+ 	gpt4 = gpt4min + (gpt4max-gpt4min)*xx(3)
++c octofit patch: optional x_F window on the photon (JETPHOX_XF)
++	if (ixfcut.eq.1) then
++	  xfph = 2.d0*gpt4*dsinh(y4)/dsqrt(s)
++	  if (xfph.lt.xfcutmin.or.xfph.ge.xfcutmax) then
++	    f2dimo3 = 0.d0
++	    return
++	  endif
++	endif
+ c ------------------ gpt3 -------------------------------------------
+ 	if (i_flag_iso.eq.1) then
+ 	  gpt3maxp = dmin1(gpt_jetsup,dsqrt(s)/(2.d0*dcosh(y3))
+@@ -1965,6 +2001,7 @@ c integrale a 1 dimension
+ 	common/scale/m,mf,mu
+ 	common/coul/n,cf,gtr
+ 	common/parami/ysup,yinf,gptsup,gptinf,s
++	common/xfcut/ixfcut,xfcutmin,xfcutmax
+ 	common/param_jet/y_jetsup,y_jetinf,gpt_jetsup,gpt_jetinf
+ 	common/alem/iloopem
+ 	common/faconv/hc2
+@@ -2015,6 +2052,14 @@ c ------------------ gpt4 ------------------------------------------
+ 	gpt4max = dmax1(gptinf,gpt4maxp)
+ 	gpt4min = gptinf
+ 	gpt4 = gpt4min + (gpt4max-gpt4min)*xx(3)
++c octofit patch: optional x_F window on the photon (JETPHOX_XF)
++	if (ixfcut.eq.1) then
++	  xfph = 2.d0*gpt4*dsinh(y4)/dsqrt(s)
++	  if (xfph.lt.xfcutmin.or.xfph.ge.xfcutmax) then
++	    f1dimo = 0.d0
++	    return
++	  endif
++	endif
+ c ------------------ gpt3 ------------------------------------------
+ c x4 = gpt4/gpt3 et x4min=2*gpt4/dsqrt(s)*dcosh(y4) <= gpt4/gpt3
+ c d'ou gpt3 <= dsqrt(s)/(2.d0*dcosh(y4)) ou gpt3 <= gpt4/x4min
