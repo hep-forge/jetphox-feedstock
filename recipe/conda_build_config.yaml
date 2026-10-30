@@ -38,3 +38,8 @@ libgcc_version:        # [linux]
   - 14.*
 libstdcxx_version:     # [linux]
   - 14.*
+
+# gfortran pinned like the C/C++ compilers: Fortran .mod files only load
+# with the gfortran major that wrote them, and GCC 14 is the channel floor.
+fortran_compiler_version:   # [linux]
+  - 14
