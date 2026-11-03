@@ -21,8 +21,14 @@ LEGACY="-std=legacy -fallow-argument-mismatch -fallow-invalid-boz -w"
 # directories. PATHLHAPDF keeps its "PATHLHAPDF\t= <path>" form because
 # start.pl rewrites that line from parameter.indat's lhapdf_path.
 M=working/Makefile
+# the C++ runtime run*.exe links: libc++ on macOS (libstdc++ there is GCC's,
+# from gfortran, and must not load next to clang's libc++)
+CXXRT=-lstdc++
+if [[ "$(uname)" == "Darwin" ]]; then
+  CXXRT=-lc++
+fi
 sed -i -e 's|^ADD_LIB_GFORTRAN\t*=.*|ADD_LIB_GFORTRAN\t\t= -lgfortran|' \
-       -e 's|^ADD_LIB_GPP\t*=.*|ADD_LIB_GPP\t\t= -lstdc++|' \
+       -e "s|^ADD_LIB_GPP\t*=.*|ADD_LIB_GPP\t\t= ${CXXRT}|" \
        -e 's|^ROOTCONFIG *:=.*|ROOTCONFIG   := root-config|' \
        -e "s|^FFLAGS\t   = -O\$|FFLAGS\t   = -O ${LEGACY}|" \
        -e 's|^LDFLAGS       = -O$|LDFLAGS       = -O -Wl,-rpath,$(PATHLHAPDF)/lib|' \
@@ -61,7 +67,9 @@ PFX="$(cd "$(dirname "$0")/.." && pwd)"
 cp -R "$PFX/share/jetphox" "$DEST"
 # parameter.indat is positional: the LHAPDF prefix is the line right after
 # the "# LHAPDF library path" comment (upstream default /usr/local).
-sed -i "/^# LHAPDF library path/{n;s|.*|$PFX|}" "$DEST/working/parameter.indat"
+# -i.bak and the ";" before "}": the same line for GNU and BSD (macOS) sed
+sed -i.bak "/^# LHAPDF library path/{n;s|.*|$PFX|;}" "$DEST/working/parameter.indat"
+rm -f "$DEST/working/parameter.indat.bak"
 echo "JETPHOX tree ready in $DEST: edit $DEST/working/parameter.indat, then (cd $DEST/working && perl start.pl)"
 EOF
 chmod +x "${PREFIX}/bin/jetphox-init"
