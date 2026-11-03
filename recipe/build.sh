@@ -23,12 +23,17 @@ LEGACY="-std=legacy -fallow-argument-mismatch -fallow-invalid-boz -w"
 M=working/Makefile
 # the C++ runtime run*.exe links: libc++ on macOS (libstdc++ there is GCC's,
 # from gfortran, and must not load next to clang's libc++)
+# and the C++ compiler for the ROOT histogram code: on macOS ROOT's headers
+# are libc++'s, which only clang reads (the g++ there is gfortran's GCC)
 CXXRT=-lstdc++
+RUNCXX=g++
 if [[ "$(uname)" == "Darwin" ]]; then
   CXXRT=-lc++
+  RUNCXX=clang++
 fi
 sed -i -e 's|^ADD_LIB_GFORTRAN\t*=.*|ADD_LIB_GFORTRAN\t\t= -lgfortran|' \
        -e "s|^ADD_LIB_GPP\t*=.*|ADD_LIB_GPP\t\t= ${CXXRT}|" \
+       -e "s|^CXX           = g++\$|CXX           = ${RUNCXX}|" \
        -e 's|^ROOTCONFIG *:=.*|ROOTCONFIG   := root-config|' \
        -e "s|^FFLAGS\t   = -O\$|FFLAGS\t   = -O ${LEGACY}|" \
        -e 's|^LDFLAGS       = -O$|LDFLAGS       = -O -Wl,-rpath,$(PATHLHAPDF)/lib|' \
@@ -38,6 +43,7 @@ sed -i -e 's|^ADD_LIB_GFORTRAN\t*=.*|ADD_LIB_GFORTRAN\t\t= -lgfortran|' \
 grep -q 'rpath,$(PATHLHAPDF)/lib' "$M"
 grep -q "^ROOTCONFIG   := root-config" "$M"
 grep -q -- "-fallow-argument-mismatch" "$M"
+grep -q "^CXX           = ${RUNCXX}\$" "$M"
 
 # ---- run-independent libraries --------------------------------------------
 # The three Makefiles hardcode /usr/bin/ar, /usr/bin/ranlib (and BASES a

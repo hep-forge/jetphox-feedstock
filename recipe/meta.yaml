@@ -48,6 +48,8 @@ requirements:
     - root
 
   run:
+    # start.pl compiles each run's ROOT histogram code with clang++ on macOS
+    - clangxx  # [osx]
     # the per-run build happens on the user's side: same toolchain family,
     # plain gfortran/gcc/g++ names as JETPHOX's Makefile expects
     - gfortran
