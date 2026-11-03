@@ -34,6 +34,7 @@ fi
 sed -i -e 's|^ADD_LIB_GFORTRAN\t*=.*|ADD_LIB_GFORTRAN\t\t= -lgfortran|' \
        -e "s|^ADD_LIB_GPP\t*=.*|ADD_LIB_GPP\t\t= ${CXXRT}|" \
        -e "s|^CXX           = g++\$|CXX           = ${RUNCXX}|" \
+       -e "s|/lib/libLHAPDF.so\$|/lib/libLHAPDF${SHLIB_EXT}|" \
        -e 's|^ROOTCONFIG *:=.*|ROOTCONFIG   := root-config|' \
        -e "s|^FFLAGS\t   = -O\$|FFLAGS\t   = -O ${LEGACY}|" \
        -e 's|^LDFLAGS       = -O$|LDFLAGS       = -O -Wl,-rpath,$(PATHLHAPDF)/lib|' \
@@ -44,6 +45,7 @@ grep -q 'rpath,$(PATHLHAPDF)/lib' "$M"
 grep -q "^ROOTCONFIG   := root-config" "$M"
 grep -q -- "-fallow-argument-mismatch" "$M"
 grep -q "^CXX           = ${RUNCXX}\$" "$M"
+grep -q "libLHAPDF${SHLIB_EXT}\$" "$M"   # .dylib on macOS
 
 # ---- run-independent libraries --------------------------------------------
 # The three Makefiles hardcode /usr/bin/ar, /usr/bin/ranlib (and BASES a
