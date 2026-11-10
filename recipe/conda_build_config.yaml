@@ -31,15 +31,23 @@ cxx_compiler:
 # effect (14 defaults to gnu++17); source that requires a particular
 # standard should set CMAKE_CXX_STANDARD explicitly as well.
 c_compiler_version:    # [linux]
-  - 14                       # [linux]
+  - 16                       # [linux]
 cxx_compiler_version:  # [linux]
-  - 14                       # [linux]
+  - 16                       # [linux]
 libgcc_version:        # [linux]
-  - 14.*                     # [linux]
+  - 16.*                     # [linux]
 libstdcxx_version:     # [linux]
-  - 14.*                     # [linux]
+  - 16.*                     # [linux]
 
 # gfortran pinned like the C/C++ compilers: Fortran .mod files only load
 # with the gfortran major that wrote them, and GCC 14 is the channel floor.
 fortran_compiler_version:   # [linux]
-  - 14                       # [linux]
+  - 16                       # [linux]
+
+# conda-forge root_base variant (cxx20/cxx23 in its build string)
+root_cxx_standard:
+  - 23
+
+# ROOT slot (root_base minor version from conda-forge)
+root:
+  - 6.38

@@ -45,7 +45,8 @@ requirements:
 
   host:
     - lhapdf
-    - root
+    - root_base {{ root }}.* cxx{{ root_cxx_standard }}*
+    - python
 
   run:
     # start.pl compiles each run's ROOT histogram code with clang++ on macOS
