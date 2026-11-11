@@ -59,7 +59,7 @@ requirements:
     - make
     - perl
     - {{ pin_compatible('lhapdf', max_pin='x.x') }}
-    - {{ pin_compatible('root', max_pin='x.x') }}
+    - {{ pin_compatible('root_base', exact=True) }}
 
 test:
   requires:
