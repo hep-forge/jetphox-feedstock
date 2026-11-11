@@ -50,7 +50,9 @@ grep -q "libLHAPDF${SHLIB_EXT}\$" "$M"   # .dylib on macOS
 # ---- run-independent libraries --------------------------------------------
 # The three Makefiles hardcode /usr/bin/ar, /usr/bin/ranlib (and BASES a
 # csh SHELL, although its rules are plain sh): use the conda toolchain's.
-TOOLS=(SHELL=/bin/bash AR="${AR}" RANLIB="${RANLIB}" FC="${FC}" CC="${CC}" FFLAGS="-O ${LEGACY}")
+# BASES' uxtime_.c is K&R C ("long sysconf();" called with an argument),
+# which C23 -- GCC 15+'s default -- reads as "takes none": build it as gnu17.
+TOOLS=(SHELL=/bin/bash AR="${AR}" RANLIB="${RANLIB}" FC="${FC}" CC="${CC} -std=gnu17" FFLAGS="-O ${LEGACY}")
 ( cd basesv5.1 && make -f Makefile_gfortran.linux "${TOOLS[@]}" )   # BASES/SPRING integrator
 ( cd frag && make "${TOOLS[@]}" )                                    # fragmentation functions
 ( cd pdfa && make "${TOOLS[@]}" )                                    # nuclear PDFs
