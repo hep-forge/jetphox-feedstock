@@ -13,7 +13,12 @@ JETPHOX: NLO cross sections for prompt photon (direct + fragmentation) and hadro
 
 ## Architectures
 
-State per architecture: see the platforms badge above or [anaconda.org/hep-forge/jetphox](https://anaconda.org/hep-forge/jetphox).
+| Architecture | Latest published |
+|--------------|------------------|
+| linux-amd64 (`linux-64`) | ✅ `1.3.1.4` |
+| linux-arm64 (`linux-aarch64`) | ✅ `1.3.1.4` |
+
+_As of the last feedstock render; the badges above are live._
 
 
 ## Install
